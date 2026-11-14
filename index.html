@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#D97706" />
   <meta name="description" content="血液透析室臨床決策入口首頁｜整合醫師透析處方、護理上機前 UFR 與血管通路評估、透析營養及急症處置導航" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%23D97706%22/%3E%3Ctext x=%2232%22 y=%2242%22 font-size=%2226%22 font-weight=%22800%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22Arial%22%3EHD%3C/text%3E%3C/svg%3E" />
   <title>血液透析室｜臨床決策與智慧照護入口首頁</title>
   <style>
     :root {
@@ -389,6 +390,46 @@
     }
     .sop-step strong { color: var(--text-main); }
 
+    .empty-state {
+      display: none;
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 28px 16px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .empty-state.show { display: block; }
+    .module-card.hidden { display: none; }
+    .filter-btn:focus-visible, .btn-launch:focus-visible, .close-btn:focus-visible,
+    .mini-field input:focus-visible, .mini-field select:focus-visible {
+      outline: 3px solid rgba(217, 119, 6, 0.45);
+      outline-offset: 2px;
+    }
+    .mini-field input:disabled { background: var(--bg-subtle); color: var(--text-muted); }
+    .mini-note { font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; line-height: 1.5; }
+    .kpi-group-title { font-size: 0.92rem; font-weight: 800; margin: 16px 0 8px; }
+    .kpi-group-title:first-child { margin-top: 0; }
+    .kpi-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 8px; }
+    .kpi-table th, .kpi-table td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .kpi-table th { background: var(--bg-subtle); font-weight: 700; }
+    .src { font-size: 0.75rem; color: var(--text-muted); }
+    .src a { color: var(--primary-hover); }
+    body.modal-open { overflow: hidden; }
+    @media (max-width: 640px) {
+      header { padding: 20px 16px 22px; }
+      .container, footer { padding: 0 16px; }
+      .brand h1 { font-size: 1.15rem; }
+      .search-box { min-width: 0; width: 100%; }
+      .modal-backdrop { padding: 10px; align-items: flex-end; }
+      .modal-card { padding: 18px; max-height: 92vh; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+      .module-card:hover { transform: none; }
+    }
+
     footer {
       max-width: 1240px;
       margin: 28px auto 0;
@@ -410,21 +451,22 @@
         </div>
       </div>
       <div class="security-pill">
-        <span>🔒</span>
-        <span>純前端零個資架構 • 支援平板 / 護理站電腦離線快取</span>
+        <span aria-hidden="true">🔒</span>
+        <span>純前端零個資架構 • 開啟過一次後本頁可離線使用</span>
       </div>
     </div>
 
     <div class="header-inner filter-bar">
       <div class="filter-tabs" id="filterTabs">
-        <button type="button" class="filter-btn active" data-cat="all" onclick="filterCards('all', this)">全部模組 (6)</button>
-        <button type="button" class="filter-btn" data-cat="md" onclick="filterCards('md', this)">醫師處方與重症</button>
-        <button type="button" class="filter-btn" data-cat="rn" onclick="filterCards('rn', this)">護理上機與通路</button>
-        <button type="button" class="filter-btn" data-cat="nutr" onclick="filterCards('nutr', this)">透析臨床營養</button>
-        <button type="button" class="filter-btn" data-cat="emerg" onclick="filterCards('emerg', this)">急症 SOP 導航</button>
+        <button type="button" class="filter-btn active" data-cat="all" aria-pressed="true">全部模組</button>
+        <button type="button" class="filter-btn" data-cat="md" aria-pressed="false">醫師處方與重症</button>
+        <button type="button" class="filter-btn" data-cat="rn" aria-pressed="false">護理上機與通路</button>
+        <button type="button" class="filter-btn" data-cat="nutr" aria-pressed="false">透析臨床營養</button>
+        <button type="button" class="filter-btn" data-cat="emerg" aria-pressed="false">急症 SOP 導航</button>
+        <button type="button" class="filter-btn" data-cat="admin" aria-pressed="false">行政品管</button>
       </div>
       <div class="search-box">
-        <input type="text" id="searchInput" placeholder="搜尋 Kt/V、UFR、血管通路、SOAP、TPE..." oninput="applySearch()" />
+        <input type="search" id="searchInput" aria-label="搜尋模組" placeholder="搜尋 Kt/V、UFR、血管通路、SOAP、TPE..." autocomplete="off" />
       </div>
     </div>
   </header>
@@ -553,28 +595,29 @@
         </div>
       </article>
 
-      <article class="module-card" data-cat="admin rn" data-keywords="行政 排班 床位 b肝 c肝 隔離 tsn 品質指標 kpi 評鑑">
+      <article class="module-card" data-cat="admin rn" data-keywords="行政 排班 床位 b肝 c肝 隔離 tsn 健保 品質指標 kpi 評鑑 urr albumin 住院率">
         <div>
           <div class="card-top">
             <span class="role-badge role-admin">護理長 / 行政 • 品管規範</span>
             <span class="status-dot builtin">內建評鑑指標卡</span>
           </div>
-          <h2>TSN 透析品質指標（KPI）與感染分區檢核</h2>
+          <h2>透析品質指標（KPI）與感染分區檢核</h2>
           <p class="desc">
-            彙整台灣腎臟醫學會（TSN）評鑑核心達標閾值（Kt/V、Hb、Albumin、Ca×P、AVF 使用率）與 B/C 肝隔離分區及急診加洗床位調度檢核原則。
+            彙整健保門診透析品質指標（Albumin、URR、Hb、Ca×P、住院／死亡／瘻管重建率、B/C 肝轉陽率），並列 KDOQI/KDIGO 臨床治療目標與 B/C 肝感染管制分區原則。
           </p>
           <div class="feature-tags">
-            <span class="ftag">TSN 評鑑指標閾值</span>
+            <span class="ftag">健保品質指標閾值</span>
             <span class="ftag">B/C 肝分區檢核</span>
-            <span class="ftag">急診加洗評估</span>
+            <span class="ftag">KDOQI / KDIGO 目標</span>
           </div>
         </div>
         <div class="card-actions">
           <button type="button" class="btn-launch" style="background:#57534E;" onclick="openModal('kpiModal')">
-            檢視 TSN 指標與分區規範
+            檢視品質指標與分區規範
           </button>
         </div>
       </article>
+      <div class="empty-state" id="emptyState" role="status">找不到符合的模組，請換個關鍵字或切回「全部模組」。</div>
     </div>
 
     <section class="pocket-panel">
@@ -587,92 +630,96 @@
           <h3>1. 超濾率（UFR）3 秒快算</h3>
           <div class="mini-row">
             <div class="mini-field">
-              <label>乾體重 (kg)</label>
-              <input type="number" id="pkDw" value="60" step="0.5" oninput="calcPocket()" />
+              <label for="pkDw">乾體重 / 透析後體重 (kg)</label>
+              <input type="number" id="pkDw" value="60" step="0.5" inputmode="decimal" min="0" />
             </div>
             <div class="mini-field">
-              <label>總脫水量 (mL)</label>
-              <input type="number" id="pkUf" value="2400" step="100" oninput="calcPocket()" />
+              <label for="pkUf">總脫水量 (mL)</label>
+              <input type="number" id="pkUf" value="2400" step="100" inputmode="decimal" min="0" />
             </div>
           </div>
           <div class="mini-row">
             <div class="mini-field">
-              <label>透析時間 (hr)</label>
-              <input type="number" id="pkHr" value="4" step="0.5" oninput="calcPocket()" />
+              <label for="pkHr">透析時間 (hr)</label>
+              <input type="number" id="pkHr" value="4" step="0.5" inputmode="decimal" min="0" />
             </div>
             <div class="mini-field">
               <label>安全上限參考</label>
-              <input type="text" value="≤ 10 mL/kg/hr" disabled />
+              <input type="text" value="≤ 10 mL/kg/hr" disabled aria-label="UFR 安全上限參考" />
             </div>
           </div>
-          <div class="mini-result" id="pkUfrOut">UFR：10.0 mL/kg/hr（安全範圍）</div>
+          <div class="mini-result" id="pkUfrOut" aria-live="polite">UFR：10.0 mL/kg/hr（安全範圍）</div>
+          <p class="mini-note">KDOQI 2015：UFR &gt; 13 mL/kg/hr 與死亡率上升相關，應避免；&gt; 10 起即需警覺並考慮延長時間或下修脫水量。</p>
         </div>
 
         <div class="pocket-box">
           <h3>2. 白蛋白矯正鈣 &amp; 鈣磷乘積</h3>
           <div class="mini-row">
             <div class="mini-field">
-              <label>血鈣 Ca (mg/dL)</label>
-              <input type="number" id="pkCa" value="8.8" step="0.1" oninput="calcPocket()" />
+              <label for="pkCa">血鈣 Ca (mg/dL)</label>
+              <input type="number" id="pkCa" value="8.8" step="0.1" inputmode="decimal" min="0" />
             </div>
             <div class="mini-field">
-              <label>白蛋白 Alb (g/dL)</label>
-              <input type="number" id="pkAlb" value="3.4" step="0.1" oninput="calcPocket()" />
+              <label for="pkAlb">白蛋白 Alb (g/dL)</label>
+              <input type="number" id="pkAlb" value="3.4" step="0.1" inputmode="decimal" min="0" />
             </div>
           </div>
           <div class="mini-row">
             <div class="mini-field">
-              <label>血磷 P (mg/dL)</label>
-              <input type="number" id="pkPhos" value="5.6" step="0.1" oninput="calcPocket()" />
+              <label for="pkPhos">血磷 P (mg/dL)</label>
+              <input type="number" id="pkPhos" value="5.6" step="0.1" inputmode="decimal" min="0" />
             </div>
             <div class="mini-field">
               <label>目標 Ca × P</label>
-              <input type="text" value="< 55 mg²/dL²" disabled />
+              <input type="text" value="< 55（健保指標 < 60）" disabled aria-label="目標鈣磷乘積" />
             </div>
           </div>
-          <div class="mini-result" id="pkCaOut">矯正鈣：9.28 mg/dL｜Ca×P：52.0</div>
+          <div class="mini-result" id="pkCaOut" aria-live="polite">矯正鈣：9.28 mg/dL｜Ca×P：52.0</div>
+          <p class="mini-note">矯正鈣＝Ca＋0.8×(4.0－Alb)，僅於 Alb &lt; 4.0 時校正；Ca×P 以矯正鈣計算。KDIGO 2017 建議個別追蹤 Ca、P，不單以乘積決策。</p>
         </div>
 
         <div class="pocket-box">
           <h3>3. 尿素清除率（URR）快算</h3>
           <div class="mini-row">
             <div class="mini-field">
-              <label>透析前 BUN (mg/dL)</label>
-              <input type="number" id="pkPreBun" value="72" step="1" oninput="calcPocket()" />
+              <label for="pkPreBun">透析前 BUN (mg/dL)</label>
+              <input type="number" id="pkPreBun" value="72" step="1" inputmode="decimal" min="0" />
             </div>
             <div class="mini-field">
-              <label>透析後 BUN (mg/dL)</label>
-              <input type="number" id="pkPostBun" value="21" step="1" oninput="calcPocket()" />
+              <label for="pkPostBun">透析後 BUN (mg/dL)</label>
+              <input type="number" id="pkPostBun" value="21" step="1" inputmode="decimal" min="0" />
             </div>
           </div>
           <div class="mini-row">
             <div class="mini-field">
-              <label>TSN 達標標準</label>
-              <input type="text" value="URR ≥ 65%" disabled />
+              <label>達標標準</label>
+              <input type="text" value="URR ≥ 65%" disabled aria-label="URR 達標標準" />
             </div>
             <div class="mini-field">
-              <label>粗估 spKt/V</label>
-              <input type="text" id="pkEstKtv" value="~1.35" disabled />
+              <label for="pkEstKtv">spKt/V（Daugirdas II）</label>
+              <input type="text" id="pkEstKtv" value="1.47" disabled />
             </div>
           </div>
-          <div class="mini-result" id="pkUrrOut">URR：70.8%（已達標 ≥ 65%）</div>
+          <div class="mini-result" id="pkUrrOut" aria-live="polite">URR：70.8%（已達標 ≥ 65%）</div>
+          <p class="mini-note">spKt/V＝−ln(R−0.008×t)＋(4−3.5R)×UF/W，R＝後/前 BUN；t、UF、W 取自左側 UFR 欄位（W 以透析後體重計）。KDOQI 2015 目標 spKt/V ≥ 1.4、最低 1.2。</p>
         </div>
       </div>
     </section>
   </main>
 
   <footer>
-    血液透析室臨床決策支援系統整合入口 • 所有工具均於本機瀏覽器執行，不儲存病患個資
+    血液透析室臨床決策支援系統整合入口 • 所有工具均於本機瀏覽器執行，不儲存病患個資<br/>
+    本頁為臨床輔助參考，不取代醫師判斷與院內作業規範 • v1.1（2026-11-14）
   </footer>
 
   <div class="modal-backdrop" id="sopModal" onclick="closeModalOnBg(event, 'sopModal')">
-    <div class="modal-card">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="sopTitle" tabindex="-1">
       <div class="modal-header">
-        <h3>🚑 透析中併發症即時處置 SOP 導航</h3>
-        <button type="button" class="close-btn" onclick="closeModal('sopModal')">✕</button>
+        <h3 id="sopTitle">🚑 透析中併發症即時處置 SOP 導航</h3>
+        <button type="button" class="close-btn" aria-label="關閉" onclick="closeModal('sopModal')">✕</button>
       </div>
       <div class="mini-field" style="margin-bottom: 14px;">
-        <label>選擇緊急臨床情境：</label>
+        <label for="sopSelect">選擇緊急臨床情境：</label>
         <select id="sopSelect" onchange="renderSopSteps()">
           <option value="idh">1. 透析中低血壓（Intradialytic Hypotension, IDH）</option>
           <option value="cramp">2. 肌肉痙攣（Muscle Cramps）</option>
@@ -686,24 +733,24 @@
   </div>
 
   <div class="modal-backdrop" id="tpeModal" onclick="closeModalOnBg(event, 'tpeModal')">
-    <div class="modal-card">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="tpeTitle" tabindex="-1">
       <div class="modal-header">
-        <h3>🩸 血漿置換術（TPE）血漿容積與置換液計算器</h3>
-        <button type="button" class="close-btn" onclick="closeModal('tpeModal')">✕</button>
+        <h3 id="tpeTitle">🩸 血漿置換術（TPE）血漿容積與置換液計算器</h3>
+        <button type="button" class="close-btn" aria-label="關閉" onclick="closeModal('tpeModal')">✕</button>
       </div>
       <div class="mini-row">
         <div class="mini-field">
-          <label>病人體重 (kg)</label>
+          <label for="tpeWt">病人體重 (kg)</label>
           <input type="number" id="tpeWt" value="60" step="0.5" oninput="calcTpe()" />
         </div>
         <div class="mini-field">
-          <label>血比容 Hct (%)</label>
+          <label for="tpeHct">血比容 Hct (%)</label>
           <input type="number" id="tpeHct" value="32" step="1" oninput="calcTpe()" />
         </div>
       </div>
       <div class="mini-row">
         <div class="mini-field">
-          <label>置換倍數 (PV Volume)</label>
+          <label for="tpeMult">置換倍數 (PV Volume)</label>
           <select id="tpeMult" onchange="calcTpe()">
             <option value="1.0">1.0 × EPV（常規自體免疫 / 神經疾患）</option>
             <option value="1.2" selected>1.2 × EPV（標準重症 / 抗體移除）</option>
@@ -711,7 +758,7 @@
           </select>
         </div>
         <div class="mini-field">
-          <label>置換液種類選擇</label>
+          <label for="tpeFluid">置換液種類選擇</label>
           <select id="tpeFluid" onchange="calcTpe()">
             <option value="alb">5% Albumin 為主（無活動性出血 / 非 TTP）</option>
             <option value="mix">5% Albumin + 末段 2–4U FFP（近期手術/切片）</option>
@@ -719,75 +766,163 @@
           </select>
         </div>
       </div>
-      <div id="tpeResultBox" style="margin-top: 12px;"></div>
+      <div class="mini-row" id="tpeFfpRow">
+        <div class="mini-field">
+          <label for="tpeFfpMl">末段 FFP 量 (mL)</label>
+          <input type="number" id="tpeFfpMl" value="500" step="50" min="0" inputmode="decimal" oninput="calcTpe()" />
+        </div>
+        <div class="mini-field">
+          <label for="tpeFfpU">FFP 每單位容量 (mL/U)</label>
+          <input type="number" id="tpeFfpU" value="110" step="5" min="50" inputmode="decimal" oninput="calcTpe()" />
+        </div>
+      </div>
+      <div id="tpeResultBox" style="margin-top: 12px;" aria-live="polite"></div>
+      <p class="mini-note">EPV＝0.065 × 體重 × (1 − Hct)（Kaplan 簡式，以全血量約 65 mL/kg 計）。台灣血液基金會 1 U 血品由 250 mL 全血分離，FFP 每單位約 100–125 mL（預設 110 mL，約為國外單位之半），請依院內血庫實際規格調整。本計算為參考，實際處方依醫囑與 ASFA 指引。</p>
     </div>
   </div>
 
   <div class="modal-backdrop" id="kpiModal" onclick="closeModalOnBg(event, 'kpiModal')">
-    <div class="modal-card">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="kpiTitle" tabindex="-1">
       <div class="modal-header">
-        <h3>📊 TSN 透析品質指標（KPI）與感染管制分區檢核</h3>
-        <button type="button" class="close-btn" onclick="closeModal('kpiModal')">✕</button>
+        <h3 id="kpiTitle">📊 透析品質指標（KPI）與感染管制分區檢核</h3>
+        <button type="button" class="close-btn" aria-label="關閉" onclick="closeModal('kpiModal')">✕</button>
       </div>
+      <div class="kpi-group-title">A. 健保門診透析品質指標（血液透析 HD1–HD13）</div>
+      <table class="kpi-table">
+        <thead><tr><th>指標</th><th>監測內容 / 閾值</th></tr></thead>
+        <tbody>
+          <tr><td>HD1 血清白蛋白</td><td>≥ 3.5 g/dL（BCG 法）或 ≥ 3.0 g/dL（BCP 法）之百分比，正向指標</td></tr>
+          <tr><td>HD2 URR</td><td>≥ 65% 之百分比（102 年起取代 Kt/V）</td></tr>
+          <tr><td>HD3 Hb</td><td>&gt; 8.5 g/dL 之百分比（102 年起取代 Hct）</td></tr>
+          <tr><td>HD4–HD7</td><td>住院率、死亡率、瘻管重建率、脫離率</td></tr>
+          <tr><td>HD8 / HD9</td><td>HBsAg 轉陽率、Anti-HCV 轉陽率（年指標）</td></tr>
+          <tr><td>HD10</td><td>55 歲以下透析病人移植登錄率</td></tr>
+          <tr><td>HD11 鈣磷乘積</td><td>&lt; 60 mg²/dL² 之百分比</td></tr>
+          <tr><td>HD12 / HD13</td><td>HBsAg、Anti-HCV 受檢率</td></tr>
+        </tbody>
+      </table>
+      <p class="src">各項合格範圍為「最近 5 年平均值 ×(1 ± 10%)」，由健保署每季公布。來源：<a href="https://www.nhi.gov.tw/ch/dl-28746-ce61504fad3748f98f772355711936ca-1.pdf" target="_blank" rel="noopener">健保署 門診透析品質指標定義</a>、<a href="https://www.nhi.gov.tw/ch/dl-54560-e866201c880b46ea9d087bdea2062e54-1.pdf" target="_blank" rel="noopener">門診透析醫療品質指標報表</a>。</p>
+
+      <div class="kpi-group-title">B. 臨床治療目標（個別病人層級，非健保閾值）</div>
       <div class="sop-step" style="border-left-color: var(--sage);">
-        <strong>1. 透析廓清率指標：</strong>每週三次血液透析者，單次 <strong>spKt/V ≥ 1.2</strong>（或 URR ≥ 65%）；建議維持在 1.3–1.4 以上以確保長期預後。
+        <strong>透析劑量：</strong>每週三次 HD，單次 <strong>spKt/V 目標 1.4、最低 1.2</strong>（KDOQI 2015）；URR ≥ 65%。
       </div>
       <div class="sop-step" style="border-left-color: var(--primary);">
-        <strong>2. 貧血與營養指標：</strong>血紅素 <strong>Hb 維持 10.0–11.5 g/dL</strong>（TSAT ≥ 20%、Ferritin ≥ 200 ng/mL）；血清白蛋白 <strong>Albumin ≥ 3.8 g/dL</strong>（BCG 法）。
+        <strong>腎性貧血：</strong>KDIGO 2012 建議 Hb &lt; 10 g/dL 時考慮開始 ESA，維持期一般不刻意超過 11.5 g/dL；TSAT ≤ 30% 且 Ferritin ≤ 500 ng/mL 可考慮鐵劑試驗治療。
       </div>
       <div class="sop-step" style="border-left-color: var(--primary);">
-        <strong>3. 礦物質與骨病變（CKD-MBD）：</strong>血磷 3.5–5.5 mg/dL、矯正血鈣 8.4–9.5 mg/dL、鈣磷乘積 &lt; 55 mg²/dL²、iPTH 150–600 pg/mL。
+        <strong>CKD-MBD：</strong>血磷朝正常範圍降低、避免高血鈣；iPTH 維持約正常上限 2–9 倍（KDIGO 2017）。Ca×P &lt; 55（KDOQI 2003 舊建議）僅供參考。
       </div>
+
+      <div class="kpi-group-title">C. 感染管制分區原則</div>
       <div class="sop-step" style="border-left-color: var(--coral);">
-        <strong>4. 感染管制分區原則：</strong>HBsAg(+) 患者必須安排於<strong>獨立 B 肝隔離區及專用透析機</strong>（專人專機）；Anti-HCV(+) 患者建議集中分區或專機專區治療，嚴禁與一般區混用耗材推車。
+        HBsAg(+) 患者安排於<strong>獨立 B 肝隔離區及專用透析機</strong>（專人專機）；Anti-HCV(+) 患者建議集中分區或專機專區治療，避免與一般區共用耗材推車。實際分區與篩檢頻率依院內感管規範與衛福部透析感染管制指引。
       </div>
     </div>
   </div>
 
   <script>
-    function filterCards(cat, btn) {
-      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
+    const state = { cat: "all", q: "" };
+
+    function num(id) {
+      const raw = document.getElementById(id).value.trim();
+      if (raw === "") return NaN;
+      const v = parseFloat(raw);
+      return Number.isFinite(v) ? v : NaN;
+    }
+    function setResult(el, text, color) {
+      el.textContent = text;
+      el.style.borderLeftColor = color;
+    }
+    const C_OK = "#3F7D58", C_WARN = "#D97706", C_BAD = "#E06D53", C_NA = "#A8A29E";
+
+    function applyFilters() {
+      const q = state.q;
+      let shown = 0;
       document.querySelectorAll(".module-card").forEach(card => {
-        const cats = card.getAttribute("data-cat").split(" ");
-        card.style.display = (cat === "all" || cats.includes(cat)) ? "flex" : "none";
+        const cats = card.dataset.cat.split(" ");
+        const catOk = state.cat === "all" || cats.includes(state.cat);
+        const text = (card.textContent + " " + (card.dataset.keywords || "")).toLowerCase();
+        const qOk = !q || q.split(/\s+/).every(t => text.includes(t));
+        const show = catOk && qOk;
+        card.classList.toggle("hidden", !show);
+        if (show) shown++;
       });
+      document.getElementById("emptyState").classList.toggle("show", shown === 0);
     }
 
-    function applySearch() {
-      const q = document.getElementById("searchInput").value.trim().toLowerCase();
-      document.querySelectorAll(".module-card").forEach(card => {
-        const text = (card.innerText + " " + card.getAttribute("data-keywords")).toLowerCase();
-        card.style.display = text.includes(q) ? "flex" : "none";
+    function initFilters() {
+      const cards = [...document.querySelectorAll(".module-card")];
+      document.querySelectorAll(".filter-btn").forEach(btn => {
+        const cat = btn.dataset.cat;
+        const n = cat === "all" ? cards.length : cards.filter(c => c.dataset.cat.split(" ").includes(cat)).length;
+        btn.textContent = `${btn.textContent.trim()} (${n})`;
+        btn.addEventListener("click", () => {
+          state.cat = cat;
+          document.querySelectorAll(".filter-btn").forEach(b => {
+            const on = b === btn;
+            b.classList.toggle("active", on);
+            b.setAttribute("aria-pressed", on ? "true" : "false");
+          });
+          applyFilters();
+        });
+      });
+      document.getElementById("searchInput").addEventListener("input", e => {
+        state.q = e.target.value.trim().toLowerCase();
+        applyFilters();
       });
     }
 
     function calcPocket() {
-      const dw = Math.max(20, parseFloat(document.getElementById("pkDw").value) || 60);
-      const uf = Math.max(0, parseFloat(document.getElementById("pkUf").value) || 0);
-      const hr = Math.max(1, parseFloat(document.getElementById("pkHr").value) || 4);
-      const ufr = uf / hr / dw;
+      // 1. UFR
+      const dw = num("pkDw"), uf = num("pkUf"), hr = num("pkHr");
       const ufrEl = document.getElementById("pkUfrOut");
-      ufrEl.textContent = `UFR：${ufr.toFixed(1)} mL/kg/hr（${ufr > 13 ? "高風險 >13" : ufr > 10 ? "警戒 10–13" : "安全範圍"}）`;
-      ufrEl.style.borderLeftColor = ufr > 13 ? "#E06D53" : ufr > 10 ? "#D97706" : "#3F7D58";
+      const ufrValid = dw >= 20 && dw <= 250 && uf >= 0 && uf <= 10000 && hr >= 1 && hr <= 12;
+      if (!ufrValid) {
+        setResult(ufrEl, "請輸入合理數值：體重 20–250 kg、脫水量 0–10000 mL、時間 1–12 hr", C_NA);
+      } else {
+        const ufr = uf / hr / dw;
+        setResult(ufrEl, `UFR：${ufr.toFixed(1)} mL/kg/hr（${ufr > 13 ? "高風險 > 13" : ufr > 10 ? "警戒 10–13" : "安全範圍 ≤ 10"}）`,
+          ufr > 13 ? C_BAD : ufr > 10 ? C_WARN : C_OK);
+      }
 
-      const ca = parseFloat(document.getElementById("pkCa").value) || 0;
-      const alb = parseFloat(document.getElementById("pkAlb").value) || 4.0;
-      const phos = parseFloat(document.getElementById("pkPhos").value) || 0;
-      const corrCa = alb < 4.0 ? ca + 0.8 * (4.0 - alb) : ca;
-      const caxp = corrCa * phos;
+      // 2. Corrected Ca & Ca×P
+      const ca = num("pkCa"), alb = num("pkAlb"), phos = num("pkPhos");
       const caEl = document.getElementById("pkCaOut");
-      caEl.textContent = `矯正鈣：${corrCa.toFixed(2)} mg/dL｜Ca×P：${caxp.toFixed(1)}`;
-      caEl.style.borderLeftColor = caxp >= 55 ? "#E06D53" : "#3F7D58";
+      if (!(ca > 0 && ca < 20 && alb > 0 && alb < 7 && phos > 0 && phos < 25)) {
+        setResult(caEl, "請輸入 Ca、Alb、P（mg/dL、g/dL）", C_NA);
+      } else {
+        const corrCa = alb < 4.0 ? ca + 0.8 * (4.0 - alb) : ca;
+        const caxp = corrCa * phos;
+        const flag = caxp >= 60 ? "超過健保指標 60" : caxp >= 55 ? "超過 KDOQI 55" : "達標";
+        setResult(caEl, `矯正鈣：${corrCa.toFixed(2)} mg/dL｜Ca×P：${caxp.toFixed(1)}（${flag}）`,
+          caxp >= 60 ? C_BAD : caxp >= 55 ? C_WARN : C_OK);
+      }
 
-      const preB = Math.max(1, parseFloat(document.getElementById("pkPreBun").value) || 70);
-      const postB = Math.max(0, parseFloat(document.getElementById("pkPostBun").value) || 20);
-      const urr = Math.max(0, ((preB - postB) / preB) * 100);
-      const estKtv = urr < 95 ? (-Math.log(1 - urr / 100) * 1.1).toFixed(2) : ">2.5";
-      document.getElementById("pkEstKtv").value = `~${estKtv}`;
+      // 3. URR & Daugirdas II spKt/V
+      const preB = num("pkPreBun"), postB = num("pkPostBun");
       const urrEl = document.getElementById("pkUrrOut");
-      urrEl.textContent = `URR：${urr.toFixed(1)}%（${urr >= 65 ? "已達標 ≥ 65%" : "未達標 < 65%"}）`;
-      urrEl.style.borderLeftColor = urr >= 65 ? "#3F7D58" : "#E06D53";
+      const ktvEl = document.getElementById("pkEstKtv");
+      if (!(preB > 0 && postB >= 0)) {
+        setResult(urrEl, "請輸入透析前、後 BUN", C_NA);
+        ktvEl.value = "—";
+      } else if (postB >= preB) {
+        setResult(urrEl, "透析後 BUN 應低於透析前，請確認抽血時機與數值", C_BAD);
+        ktvEl.value = "—";
+      } else {
+        const R = postB / preB;
+        const urr = (1 - R) * 100;
+        setResult(urrEl, `URR：${urr.toFixed(1)}%（${urr >= 65 ? "已達標 ≥ 65%" : "未達標 < 65%"}）`, urr >= 65 ? C_OK : C_BAD);
+        const arg = R - 0.008 * hr;
+        if (!ufrValid) {
+          ktvEl.value = "需填 UFR 欄位";
+        } else if (arg <= 0) {
+          ktvEl.value = "超出公式範圍";
+        } else {
+          const ktv = -Math.log(arg) + (4 - 3.5 * R) * (uf / 1000) / dw;
+          ktvEl.value = ktv.toFixed(2);
+        }
+      }
     }
 
     const SOP_DATA = {
@@ -805,7 +940,8 @@
       dds: [
         "<strong>步驟 1｜辨識症狀：</strong>新進入透析或高 BUN（> 100 mg/dL）患者出現頭痛、噁心嘔吐、躁動、視力模糊甚至抽搐。",
         "<strong>步驟 2｜降低溶質清除速率：</strong>立即調降血液流速 Qb（至 150–180 mL/min）與透析液流速 Qd，縮短單次透析時間（首次建議 2–2.5 小時）。",
-        "<strong>步驟 3｜通報醫師：</strong>必要時依醫囑給予 Mannitol 靜脈輸注提高血漿滲透壓，並密切監測意識狀態。"
+        "<strong>步驟 3｜通報醫師：</strong>必要時依醫囑給予 Mannitol 靜脈輸注提高血漿滲透壓，並密切監測意識狀態。",
+        "<strong>步驟 4｜重症處置：</strong>若出現抽搐、意識改變或昏迷，<strong>立即停止透析</strong>，維持呼吸道、給氧並依醫囑處理癲癇，排除低血糖、顱內出血等其他原因。"
       ],
       clot: [
         "<strong>步驟 1｜評估凝血程度：</strong>觀察靜脈壺（Venous chamber）是否出現纖維蛋白絲、血塊或跨膜壓（TMP）急劇上升。",
@@ -826,55 +962,94 @@
     }
 
     function calcTpe() {
-      const wt = Math.max(20, parseFloat(document.getElementById("tpeWt").value) || 60);
-      const hct = Math.min(70, Math.max(10, parseFloat(document.getElementById("tpeHct").value) || 32));
+      const box = document.getElementById("tpeResultBox");
+      const wt = num("tpeWt"), hct = num("tpeHct");
       const mult = parseFloat(document.getElementById("tpeMult").value) || 1.2;
       const fluid = document.getElementById("tpeFluid").value;
+      const ffpUnit = num("tpeFfpU") >= 50 ? num("tpeFfpU") : 110;
+      document.getElementById("tpeFfpRow").style.display = fluid === "alb" ? "none" : "";
+      document.getElementById("tpeFfpMl").closest(".mini-field").style.visibility = fluid === "mix" ? "visible" : "hidden";
 
+      if (!(wt >= 20 && wt <= 250 && hct >= 10 && hct <= 70)) {
+        box.innerHTML = `<div class="sop-step" style="border-left-color:${C_NA};">請輸入合理數值：體重 20–250 kg、Hct 10–70%。</div>`;
+        return;
+      }
       const epvLiters = 0.065 * wt * (1 - hct / 100);
       const totalExMl = Math.round(epvLiters * mult * 1000);
-      const caAmp = (totalExMl / 1000 * 1.5).toFixed(1);
+      const u = ml => (ml / ffpUnit).toFixed(1);
 
-      let fluidPlan = "";
+      let fluidPlan = "", albMl = 0, ffpMl = 0;
       if (fluid === "alb") {
-        fluidPlan = `建議配置：<strong>5% Albumin ${totalExMl} mL</strong>（約 ${Math.ceil(totalExMl / 250)} 瓶 250mL 5% 白蛋白，或以 20% Albumin 稀釋配置）。`;
+        albMl = totalExMl;
+        fluidPlan = `建議配置：<strong>5% Albumin ${albMl} mL</strong>（約 ${Math.ceil(albMl / 250)} 瓶 250 mL 5% 白蛋白，或以 20% Albumin 加生理食鹽水稀釋為 5%：每 1000 mL 約 250 mL 20% Albumin ＋ 750 mL NS）。`;
       } else if (fluid === "mix") {
-        const ffpMl = 750;
-        const albMl = Math.max(0, totalExMl - ffpMl);
-        fluidPlan = `建議配置：前段 <strong>5% Albumin ${albMl} mL</strong> ＋ 末段 <strong>FFP 約 3–4 單位（~750 mL）</strong>以補充凝血因子。`;
+        ffpMl = Math.min(totalExMl, Math.max(0, num("tpeFfpMl") || 0));
+        albMl = totalExMl - ffpMl;
+        fluidPlan = `建議配置：前段 <strong>5% Albumin ${albMl} mL</strong> ＋ 末段 <strong>FFP ${ffpMl} mL</strong>（約 ${u(ffpMl)} 台灣 U）以補充凝血因子。`;
       } else {
-        fluidPlan = `建議配置：全程 <strong>FFP ${totalExMl} mL</strong>（約 ${Math.ceil(totalExMl / 250)} 單位），密切監測過敏反應與檸檬酸低血鈣。`;
+        ffpMl = totalExMl;
+        fluidPlan = `建議配置：全程 <strong>FFP ${ffpMl} mL</strong>（約 ${u(ffpMl)} 台灣 U，以 ${ffpUnit} mL/U 計），密切監測過敏反應與檸檬酸低血鈣。`;
       }
+      const caMl = Math.round(albMl / 1000 * 10);
+      const caText = albMl > 0
+        ? `白蛋白置換液常見做法為每 1 L 加入 / 併用 10% Calcium Gluconate 約 10 mL，本次約 <strong>${caMl} mL（${(caMl / 10).toFixed(1)} 支 10 mL 安瓿）</strong>，依醫囑調整。`
+        : "";
+      const ffpText = ffpMl > 0 ? `FFP 含檸檬酸，輸注量越大低血鈣風險越高（口周麻木、手指刺痛、抽筋），需更密切監測游離鈣。` : "";
 
-      document.getElementById("tpeResultBox").innerHTML = `
+      box.innerHTML = `
         <div class="sop-step" style="border-left-color: var(--primary);">
           <strong>預估血漿容積 (1.0 × EPV)：</strong>${epvLiters.toFixed(2)} L（${Math.round(epvLiters * 1000)} mL）<br/>
           <strong>本次目標總置換量 (${mult} × EPV)：</strong><span style="font-size:1.05rem; color:#B45309;">${totalExMl} mL</span>
         </div>
         <div class="sop-step" style="border-left-color: var(--sage);">${fluidPlan}</div>
         <div class="sop-step" style="border-left-color: var(--coral);">
-          <strong>低血鈣預防提示：</strong>若使用 ACD-A 檸檬酸抗凝或輸注大量 FFP，建議預防性靜脈補充 10% Calcium Gluconate 約 <strong>${caAmp} 支（10–20 mL）</strong>並監測游離鈣。
+          <strong>低血鈣預防：</strong>${caText} ${ffpText} 使用 ACD-A 檸檬酸抗凝時，於治療中監測游離鈣並依症狀補充。
         </div>
       `;
     }
 
+    let lastFocus = null;
     function openModal(id) {
-      document.getElementById(id).classList.add("open");
+      lastFocus = document.activeElement;
+      const m = document.getElementById(id);
+      m.classList.add("open");
+      document.body.classList.add("modal-open");
       if (id === "sopModal") renderSopSteps();
       if (id === "tpeModal") calcTpe();
+      m.querySelector(".modal-card").focus();
     }
     function closeModal(id) {
       document.getElementById(id).classList.remove("open");
+      if (!document.querySelector(".modal-backdrop.open")) document.body.classList.remove("modal-open");
+      if (lastFocus) lastFocus.focus();
     }
     function closeModalOnBg(evt, id) {
       if (evt.target.id === id) closeModal(id);
     }
+    document.addEventListener("keydown", e => {
+      const open = document.querySelector(".modal-backdrop.open");
+      if (!open) return;
+      if (e.key === "Escape") { closeModal(open.id); return; }
+      if (e.key === "Tab") {
+        const f = [...open.querySelectorAll("button, select, input:not([disabled]), a[href]")];
+        if (!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && (document.activeElement === first || document.activeElement === open.querySelector(".modal-card"))) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
 
     window.addEventListener("DOMContentLoaded", () => {
+      initFilters();
+      document.querySelectorAll(".pocket-box input").forEach(el => el.addEventListener("input", calcPocket));
       calcPocket();
       renderSopSteps();
       calcTpe();
     });
+
+    if ("serviceWorker" in navigator && location.protocol === "https:") {
+      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+    }
   </script>
 </body>
 </html>
