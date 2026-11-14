@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#D97706" />
+  <meta name="description" content="血液透析室臨床決策入口首頁｜整合醫師透析處方、護理上機前 UFR 與血管通路評估、透析營養及急症處置導航" />
+  <title>血液透析室｜臨床決策與智慧照護入口首頁</title>
+  <style>
+    :root {
+      --bg-main: #FDFBF7;
+      --bg-card: #FFFFFF;
+      --bg-subtle: #F7F4EF;
+      --bg-warm-tint: #FEF3C7;
+      --primary: #D97706;
+      --primary-hover: #B45309;
+      --coral: #E06D53;
+      --coral-bg: #FFF1EE;
+      --sage: #3F7D58;
+      --sage-bg: #ECFDF5;
+      --text-main: #2D2522;
+      --text-muted: #6E625D;
+      --border: #E6DFD5;
+      --shadow: 0 6px 20px rgba(45, 37, 34, 0.06);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 56px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #FFF7E6 0%, #F7F4EF 60%, #FDECE8 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 24px 32px;
+    }
+    .header-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--coral));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.28);
+    }
+    .brand h1 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .brand p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+    .security-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid var(--border);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--sage);
+    }
+
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .filter-btn {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .filter-btn:hover { background: var(--bg-subtle); color: var(--text-main); }
+    .filter-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.24);
+    }
+    .search-box {
+      position: relative;
+      min-width: 240px;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 0.88rem;
+      color: var(--text-main);
+    }
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.14);
+    }
+
+    .container {
+      max-width: 1240px;
+      margin: 26px auto 0;
+      padding: 0 20px;
+    }
+
+    .section-heading {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-main);
+    }
+    .section-heading span.sub {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 980px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px) { .cards-grid { grid-template-columns: 1fr; } }
+
+    .module-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .module-card:hover {
+      transform: translateY(-3px);
+      border-color: #D6C7B2;
+      box-shadow: 0 10px 26px rgba(45, 37, 34, 0.1);
+    }
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .role-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .role-md { background: #FEF3C7; color: #92400E; }
+    .role-rn { background: var(--coral-bg); color: #B91C1C; }
+    .role-nutr { background: var(--sage-bg); color: #065F46; }
+    .role-emerg { background: #FEE2E2; color: #991B1B; }
+    .role-admin { background: var(--bg-subtle); color: var(--text-muted); }
+
+    .status-dot {
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--sage);
+    }
+    .status-dot::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--sage);
+    }
+    .status-dot.builtin { color: var(--primary); }
+    .status-dot.builtin::before { background: var(--primary); }
+
+    .module-card h2 {
+      font-size: 1.12rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+    .module-card p.desc {
+      font-size: 0.87rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+    .ftag {
+      font-size: 0.75rem;
+      background: var(--bg-subtle);
+      color: var(--text-main);
+      padding: 3px 9px;
+      border-radius: 7px;
+      font-weight: 600;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+    }
+    .btn-launch {
+      flex: 1;
+      text-align: center;
+      text-decoration: none;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-launch:hover { background: var(--primary-hover); }
+    .btn-launch.coral { background: var(--coral); }
+    .btn-launch.coral:hover { opacity: 0.92; }
+    .btn-launch.sage { background: var(--sage); }
+    .btn-launch.sage:hover { opacity: 0.92; }
+
+    .pocket-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+    .pocket-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 14px;
+    }
+    @media (max-width: 900px) { .pocket-grid { grid-template-columns: 1fr; } }
+    .pocket-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .pocket-box h3 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: var(--text-main);
+    }
+    .mini-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .mini-field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+    .mini-field input, .mini-field select {
+      width: 100%;
+      padding: 6px 9px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .mini-result {
+      background: #fff;
+      border-radius: 9px;
+      padding: 9px 12px;
+      border-left: 4px solid var(--primary);
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(45, 37, 34, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+      backdrop-filter: blur(3px);
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      max-width: 720px;
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .modal-header h3 { font-size: 1.15rem; font-weight: 800; }
+    .close-btn {
+      background: var(--bg-subtle);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .sop-step {
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: var(--bg-subtle);
+      margin-bottom: 8px;
+      border-left: 4px solid var(--coral);
+      font-size: 0.88rem;
+    }
+    .sop-step strong { color: var(--text-main); }
+
+    footer {
+      max-width: 1240px;
+      margin: 28px auto 0;
+      padding: 0 20px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo">HD</div>
+        <div>
+          <h1>血液透析室｜臨床決策與智慧照護入口首頁</h1>
+          <p>整合醫療處方決策、護理上機安全檢核、透析營養精算與床邊急症處置導航</p>
+        </div>
+      </div>
+      <div class="security-pill">
+        <span>🔒</span>
+        <span>純前端零個資架構 • 支援平板 / 護理站電腦離線快取</span>
+      </div>
+    </div>
+
+    <div class="header-inner filter-bar">
+      <div class="filter-tabs" id="filterTabs">
+        <button type="button" class="filter-btn active" data-cat="all" onclick="filterCards('all', this)">全部模組 (6)</button>
+        <button type="button" class="filter-btn" data-cat="md" onclick="filterCards('md', this)">醫師處方與重症</button>
+        <button type="button" class="filter-btn" data-cat="rn" onclick="filterCards('rn', this)">護理上機與通路</button>
+        <button type="button" class="filter-btn" data-cat="nutr" onclick="filterCards('nutr', this)">透析臨床營養</button>
+        <button type="button" class="filter-btn" data-cat="emerg" onclick="filterCards('emerg', this)">急症 SOP 導航</button>
+      </div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="搜尋 Kt/V、UFR、血管通路、SOAP、TPE..." oninput="applySearch()" />
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="section-heading">
+      <span>臨床決策支援系統模組（點擊直接開啟操作）</span>
+      <span class="sub">GitHub Pages 單頁應用整合入口</span>
+    </div>
+
+    <div class="cards-grid" id="cardsGrid">
+      <article class="module-card" data-cat="md" data-keywords="醫師 處方 ktv spktv urr ckd-mbd 貧血 高血鉀 soap 病歷">
+        <div>
+          <div class="card-top">
+            <span class="role-badge role-md">醫師端 • 醫療處方</span>
+            <span class="status-dot">GitHub Pages 已部署</span>
+          </div>
+          <h2>透析處方（spKt/V）與每月生化決策引導</h2>
+          <p class="desc">
+            即時模擬尿素廓清率 K、spKt/V 與 URR；依 TSN/KDIGO 指引自動判讀 CKD-MBD、腎性貧血與高血鉀，並一鍵生成中英對照 SOAP 病程紀錄。
+          </p>
+          <div class="feature-tags">
+            <span class="ftag">spKt/V 動態試算</span>
+            <span class="ftag">CKD-MBD 決策樹</span>
+            <span class="ftag">貧血 / 鐵劑指引</span>
+            <span class="ftag">一鍵 SOAP 複製</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn-launch" href="https://yht5582-source.github.io/hd-clinical-decision-support/" target="_blank" rel="noopener">
+            開啟醫師決策系統 ↗
+          </a>
+        </div>
+      </article>
+
+      <article class="module-card" data-cat="rn" data-keywords="護理 上機前 ufr 超濾率 idwg 乾體重 血管通路 avf avg permcath 穿刺地圖 dar 交班">
+        <div>
+          <div class="card-top">
+            <span class="role-badge role-rn">護理端 • 上機安全</span>
+            <span class="status-dot">GitHub Pages 已部署</span>
+          </div>
+          <h2>上機前 UFR 安全檢核與血管通路穿刺地圖</h2>
+          <p class="desc">
+            自動計算 IDWG 與超濾率 UFR（mL/kg/hr）安全燈號，結合互動式 AVF/AVG 繩梯法穿刺 SVG 圖譜與 Permcath 檢核，一鍵產出 DAR 護理紀錄。
+          </p>
+          <div class="feature-tags">
+            <span class="ftag">UFR 紅黃綠燈警示</span>
+            <span class="ftag">互動穿刺 SVG 圖譜</span>
+            <span class="ftag">Look-Listen-Feel</span>
+            <span class="ftag">DAR 護理紀錄</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn-launch coral" href="https://yht5582-source.github.io/hd-nursing-ufr-access/" target="_blank" rel="noopener">
+            開啟護理檢核系統 ↗
+          </a>
+        </div>
+      </article>
+
+      <article class="module-card" data-cat="nutr" data-keywords="營養師 營養 pew 白蛋白 albumin ons 口服營養品 低磷 蛋白質 熱量">
+        <div>
+          <div class="card-top">
+            <span class="role-badge role-nutr">營養端 • 跨科照護</span>
+            <span class="status-dot">GitHub Pages 已部署</span>
+          </div>
+          <h2>CKD 與透析專用口服營養品（ONS）精算系統</h2>
+          <p class="desc">
+            針對血液透析高蛋白需求（1.0–1.2 g/kg）與低白蛋白（PEW）個案，篩選低磷/蛋白質比值（P/Pro ratio）與控鉀配方，試算每日補充罐數。
+          </p>
+          <div class="feature-tags">
+            <span class="ftag">PEW 營養風險評估</span>
+            <span class="ftag">低磷/蛋白比篩選</span>
+            <span class="ftag">透析配方組合試算</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn-launch sage" href="https://yht5582-source.github.io/ckd-ons-choice/" target="_blank" rel="noopener">
+            開啟透析營養工具 ↗
+          </a>
+        </div>
+      </article>
+
+      <article class="module-card" data-cat="emerg rn md" data-keywords="急救 併發症 idh 低血壓 抽筋 痙攣 不平衡症候群 凝血 空氣栓塞 sop">
+        <div>
+          <div class="card-top">
+            <span class="role-badge role-emerg">急症處置 • 床邊 SOP</span>
+            <span class="status-dot builtin">內建即時互動卡</span>
+          </div>
+          <h2>透析中併發症即時處置 SOP 導航</h2>
+          <p class="desc">
+            針對透析中低血壓（IDH）、肌肉痙攣、透析不平衡症候群（DDS）、迴路凝血及空氣栓塞，提供一鍵點選情境與逐步調機給水檢核清單。
+          </p>
+          <div class="feature-tags">
+            <span class="ftag">低血壓 (IDH) 處置</span>
+            <span class="ftag">肌肉痙攣處置</span>
+            <span class="ftag">空氣栓塞急救</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button type="button" class="btn-launch coral" onclick="openModal('sopModal')">
+            立即開啟床邊 SOP 導航
+          </button>
+        </div>
+      </article>
+
+      <article class="module-card" data-cat="md" data-keywords="血漿置換 tpe plasmapheresis epv 血漿容積 白蛋白 ffp 鈣補充">
+        <div>
+          <div class="card-top">
+            <span class="role-badge role-md">醫師 / 護理 • 特殊治療</span>
+            <span class="status-dot builtin">內建參數試算器</span>
+          </div>
+          <h2>血漿置換術（TPE）血漿容積與置換液計算器</h2>
+          <p class="desc">
+            協助住院醫師與透析護理師快速估算患者血漿容積（EPV）、1.0–1.5 倍置換總量、白蛋白與 FFP 比例配置，以及檸檬酸抗凝低血鈣預防補鈣劑量。
+          </p>
+          <div class="feature-tags">
+            <span class="ftag">EPV 血漿容積估算</span>
+            <span class="ftag">置換液比例建議</span>
+            <span class="ftag">低血鈣預防補鈣</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button type="button" class="btn-launch" onclick="openModal('tpeModal')">
+            開啟 TPE 參數計算器
+          </button>
+        </div>
+      </article>
+
+      <article class="module-card" data-cat="admin rn" data-keywords="行政 排班 床位 b肝 c肝 隔離 tsn 品質指標 kpi 評鑑">
+        <div>
+          <div class="card-top">
+            <span class="role-badge role-admin">護理長 / 行政 • 品管規範</span>
+            <span class="status-dot builtin">內建評鑑指標卡</span>
+          </div>
+          <h2>TSN 透析品質指標（KPI）與感染分區檢核</h2>
+          <p class="desc">
+            彙整台灣腎臟醫學會（TSN）評鑑核心達標閾值（Kt/V、Hb、Albumin、Ca×P、AVF 使用率）與 B/C 肝隔離分區及急診加洗床位調度檢核原則。
+          </p>
+          <div class="feature-tags">
+            <span class="ftag">TSN 評鑑指標閾值</span>
+            <span class="ftag">B/C 肝分區檢核</span>
+            <span class="ftag">急診加洗評估</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button type="button" class="btn-launch" style="background:#57534E;" onclick="openModal('kpiModal')">
+            檢視 TSN 指標與分區規範
+          </button>
+        </div>
+      </article>
+    </div>
+
+    <section class="pocket-panel">
+      <div class="section-heading" style="margin-bottom: 4px;">
+        <span>⚡ 床邊即時口袋快算工具（免切換頁面直接試算）</span>
+        <span class="sub">輸入數值即時更新結果</span>
+      </div>
+      <div class="pocket-grid">
+        <div class="pocket-box">
+          <h3>1. 超濾率（UFR）3 秒快算</h3>
+          <div class="mini-row">
+            <div class="mini-field">
+              <label>乾體重 (kg)</label>
+              <input type="number" id="pkDw" value="60" step="0.5" oninput="calcPocket()" />
+            </div>
+            <div class="mini-field">
+              <label>總脫水量 (mL)</label>
+              <input type="number" id="pkUf" value="2400" step="100" oninput="calcPocket()" />
+            </div>
+          </div>
+          <div class="mini-row">
+            <div class="mini-field">
+              <label>透析時間 (hr)</label>
+              <input type="number" id="pkHr" value="4" step="0.5" oninput="calcPocket()" />
+            </div>
+            <div class="mini-field">
+              <label>安全上限參考</label>
+              <input type="text" value="≤ 10 mL/kg/hr" disabled />
+            </div>
+          </div>
+          <div class="mini-result" id="pkUfrOut">UFR：10.0 mL/kg/hr（安全範圍）</div>
+        </div>
+
+        <div class="pocket-box">
+          <h3>2. 白蛋白矯正鈣 &amp; 鈣磷乘積</h3>
+          <div class="mini-row">
+            <div class="mini-field">
+              <label>血鈣 Ca (mg/dL)</label>
+              <input type="number" id="pkCa" value="8.8" step="0.1" oninput="calcPocket()" />
+            </div>
+            <div class="mini-field">
+              <label>白蛋白 Alb (g/dL)</label>
+              <input type="number" id="pkAlb" value="3.4" step="0.1" oninput="calcPocket()" />
+            </div>
+          </div>
+          <div class="mini-row">
+            <div class="mini-field">
+              <label>血磷 P (mg/dL)</label>
+              <input type="number" id="pkPhos" value="5.6" step="0.1" oninput="calcPocket()" />
+            </div>
+            <div class="mini-field">
+              <label>目標 Ca × P</label>
+              <input type="text" value="< 55 mg²/dL²" disabled />
+            </div>
+          </div>
+          <div class="mini-result" id="pkCaOut">矯正鈣：9.28 mg/dL｜Ca×P：52.0</div>
+        </div>
+
+        <div class="pocket-box">
+          <h3>3. 尿素清除率（URR）快算</h3>
+          <div class="mini-row">
+            <div class="mini-field">
+              <label>透析前 BUN (mg/dL)</label>
+              <input type="number" id="pkPreBun" value="72" step="1" oninput="calcPocket()" />
+            </div>
+            <div class="mini-field">
+              <label>透析後 BUN (mg/dL)</label>
+              <input type="number" id="pkPostBun" value="21" step="1" oninput="calcPocket()" />
+            </div>
+          </div>
+          <div class="mini-row">
+            <div class="mini-field">
+              <label>TSN 達標標準</label>
+              <input type="text" value="URR ≥ 65%" disabled />
+            </div>
+            <div class="mini-field">
+              <label>粗估 spKt/V</label>
+              <input type="text" id="pkEstKtv" value="~1.35" disabled />
+            </div>
+          </div>
+          <div class="mini-result" id="pkUrrOut">URR：70.8%（已達標 ≥ 65%）</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    血液透析室臨床決策支援系統整合入口 • 所有工具均於本機瀏覽器執行，不儲存病患個資
+  </footer>
+
+  <div class="modal-backdrop" id="sopModal" onclick="closeModalOnBg(event, 'sopModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🚑 透析中併發症即時處置 SOP 導航</h3>
+        <button type="button" class="close-btn" onclick="closeModal('sopModal')">✕</button>
+      </div>
+      <div class="mini-field" style="margin-bottom: 14px;">
+        <label>選擇緊急臨床情境：</label>
+        <select id="sopSelect" onchange="renderSopSteps()">
+          <option value="idh">1. 透析中低血壓（Intradialytic Hypotension, IDH）</option>
+          <option value="cramp">2. 肌肉痙攣（Muscle Cramps）</option>
+          <option value="dds">3. 透析不平衡症候群（Dialysis Disequilibrium Syndrome, DDS）</option>
+          <option value="clot">4. 人工腎臟 / 管路凝血（Extracorporeal Circuit Clotting）</option>
+          <option value="air">5. 空氣栓塞（Air Embolism - 最高緊急）</option>
+        </select>
+      </div>
+      <div id="sopStepsContainer"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="tpeModal" onclick="closeModalOnBg(event, 'tpeModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🩸 血漿置換術（TPE）血漿容積與置換液計算器</h3>
+        <button type="button" class="close-btn" onclick="closeModal('tpeModal')">✕</button>
+      </div>
+      <div class="mini-row">
+        <div class="mini-field">
+          <label>病人體重 (kg)</label>
+          <input type="number" id="tpeWt" value="60" step="0.5" oninput="calcTpe()" />
+        </div>
+        <div class="mini-field">
+          <label>血比容 Hct (%)</label>
+          <input type="number" id="tpeHct" value="32" step="1" oninput="calcTpe()" />
+        </div>
+      </div>
+      <div class="mini-row">
+        <div class="mini-field">
+          <label>置換倍數 (PV Volume)</label>
+          <select id="tpeMult" onchange="calcTpe()">
+            <option value="1.0">1.0 × EPV（常規自體免疫 / 神經疾患）</option>
+            <option value="1.2" selected>1.2 × EPV（標準重症 / 抗體移除）</option>
+            <option value="1.5">1.5 × EPV（TTP / 急性重症高力價抗體）</option>
+          </select>
+        </div>
+        <div class="mini-field">
+          <label>置換液種類選擇</label>
+          <select id="tpeFluid" onchange="calcTpe()">
+            <option value="alb">5% Albumin 為主（無活動性出血 / 非 TTP）</option>
+            <option value="mix">5% Albumin + 末段 2–4U FFP（近期手術/切片）</option>
+            <option value="ffp">100% FFP（TTP / 嚴重凝血異常）</option>
+          </select>
+        </div>
+      </div>
+      <div id="tpeResultBox" style="margin-top: 12px;"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="kpiModal" onclick="closeModalOnBg(event, 'kpiModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>📊 TSN 透析品質指標（KPI）與感染管制分區檢核</h3>
+        <button type="button" class="close-btn" onclick="closeModal('kpiModal')">✕</button>
+      </div>
+      <div class="sop-step" style="border-left-color: var(--sage);">
+        <strong>1. 透析廓清率指標：</strong>每週三次血液透析者，單次 <strong>spKt/V ≥ 1.2</strong>（或 URR ≥ 65%）；建議維持在 1.3–1.4 以上以確保長期預後。
+      </div>
+      <div class="sop-step" style="border-left-color: var(--primary);">
+        <strong>2. 貧血與營養指標：</strong>血紅素 <strong>Hb 維持 10.0–11.5 g/dL</strong>（TSAT ≥ 20%、Ferritin ≥ 200 ng/mL）；血清白蛋白 <strong>Albumin ≥ 3.8 g/dL</strong>（BCG 法）。
+      </div>
+      <div class="sop-step" style="border-left-color: var(--primary);">
+        <strong>3. 礦物質與骨病變（CKD-MBD）：</strong>血磷 3.5–5.5 mg/dL、矯正血鈣 8.4–9.5 mg/dL、鈣磷乘積 &lt; 55 mg²/dL²、iPTH 150–600 pg/mL。
+      </div>
+      <div class="sop-step" style="border-left-color: var(--coral);">
+        <strong>4. 感染管制分區原則：</strong>HBsAg(+) 患者必須安排於<strong>獨立 B 肝隔離區及專用透析機</strong>（專人專機）；Anti-HCV(+) 患者建議集中分區或專機專區治療，嚴禁與一般區混用耗材推車。
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function filterCards(cat, btn) {
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.querySelectorAll(".module-card").forEach(card => {
+        const cats = card.getAttribute("data-cat").split(" ");
+        card.style.display = (cat === "all" || cats.includes(cat)) ? "flex" : "none";
+      });
+    }
+
+    function applySearch() {
+      const q = document.getElementById("searchInput").value.trim().toLowerCase();
+      document.querySelectorAll(".module-card").forEach(card => {
+        const text = (card.innerText + " " + card.getAttribute("data-keywords")).toLowerCase();
+        card.style.display = text.includes(q) ? "flex" : "none";
+      });
+    }
+
+    function calcPocket() {
+      const dw = Math.max(20, parseFloat(document.getElementById("pkDw").value) || 60);
+      const uf = Math.max(0, parseFloat(document.getElementById("pkUf").value) || 0);
+      const hr = Math.max(1, parseFloat(document.getElementById("pkHr").value) || 4);
+      const ufr = uf / hr / dw;
+      const ufrEl = document.getElementById("pkUfrOut");
+      ufrEl.textContent = `UFR：${ufr.toFixed(1)} mL/kg/hr（${ufr > 13 ? "高風險 >13" : ufr > 10 ? "警戒 10–13" : "安全範圍"}）`;
+      ufrEl.style.borderLeftColor = ufr > 13 ? "#E06D53" : ufr > 10 ? "#D97706" : "#3F7D58";
+
+      const ca = parseFloat(document.getElementById("pkCa").value) || 0;
+      const alb = parseFloat(document.getElementById("pkAlb").value) || 4.0;
+      const phos = parseFloat(document.getElementById("pkPhos").value) || 0;
+      const corrCa = alb < 4.0 ? ca + 0.8 * (4.0 - alb) : ca;
+      const caxp = corrCa * phos;
+      const caEl = document.getElementById("pkCaOut");
+      caEl.textContent = `矯正鈣：${corrCa.toFixed(2)} mg/dL｜Ca×P：${caxp.toFixed(1)}`;
+      caEl.style.borderLeftColor = caxp >= 55 ? "#E06D53" : "#3F7D58";
+
+      const preB = Math.max(1, parseFloat(document.getElementById("pkPreBun").value) || 70);
+      const postB = Math.max(0, parseFloat(document.getElementById("pkPostBun").value) || 20);
+      const urr = Math.max(0, ((preB - postB) / preB) * 100);
+      const estKtv = urr < 95 ? (-Math.log(1 - urr / 100) * 1.1).toFixed(2) : ">2.5";
+      document.getElementById("pkEstKtv").value = `~${estKtv}`;
+      const urrEl = document.getElementById("pkUrrOut");
+      urrEl.textContent = `URR：${urr.toFixed(1)}%（${urr >= 65 ? "已達標 ≥ 65%" : "未達標 < 65%"}）`;
+      urrEl.style.borderLeftColor = urr >= 65 ? "#3F7D58" : "#E06D53";
+    }
+
+    const SOP_DATA = {
+      idh: [
+        "<strong>步驟 1｜立即停止脫水：</strong>將超濾率（UF Rate）暫停歸零（UF OFF），立即測量血壓與脈搏。",
+        "<strong>步驟 2｜調整體位：</strong>協助患者採平躺或頭低腳高姿勢（Trendelenburg position），維持呼吸道暢通。",
+        "<strong>步驟 3｜快速輸注生理食鹽水：</strong>依醫囑由靜脈端快速輸注 0.9% Normal Saline 100–200 mL，並評估血壓回升反應。",
+        "<strong>步驟 4｜調機與通報：</strong>調降透析液溫度至 35.5–36.0°C、暫時下調血液流速 Qb，通報醫師評估是否下修當次總脫水量或重估乾體重。"
+      ],
+      cramp: [
+        "<strong>步驟 1｜暫停脫水與局部處理：</strong>先將 UF Rate 調降或暫停，協助伸展痙攣肌群並給予局部溫敷按摩。",
+        "<strong>步驟 2｜擴充血漿容積：</strong>依醫囑給予 0.9% Normal Saline 100–200 mL 或高張溶液（如 50% Glucose 20–40 mL 靜脈推注，非糖尿病患優先）。",
+        "<strong>步驟 3｜預防再發：</strong>檢視實際體重是否低於乾體重，後續改採階梯遞減脫水曲線（UF Profile）。"
+      ],
+      dds: [
+        "<strong>步驟 1｜辨識症狀：</strong>新進入透析或高 BUN（> 100 mg/dL）患者出現頭痛、噁心嘔吐、躁動、視力模糊甚至抽搐。",
+        "<strong>步驟 2｜降低溶質清除速率：</strong>立即調降血液流速 Qb（至 150–180 mL/min）與透析液流速 Qd，縮短單次透析時間（首次建議 2–2.5 小時）。",
+        "<strong>步驟 3｜通報醫師：</strong>必要時依醫囑給予 Mannitol 靜脈輸注提高血漿滲透壓，並密切監測意識狀態。"
+      ],
+      clot: [
+        "<strong>步驟 1｜評估凝血程度：</strong>觀察靜脈壺（Venous chamber）是否出現纖維蛋白絲、血塊或跨膜壓（TMP）急劇上升。",
+        "<strong>步驟 2｜沖洗確認：</strong>以 100 mL Normal Saline 沖洗管路確認是否尚可維持；若整支人工腎臟變黑凝固，<strong>嚴禁強行將血塊推回體內</strong>。",
+        "<strong>步驟 3｜更換管路與檢討抗凝：</strong>依無菌原則更換新人工腎臟與迴路管繼續治療，並通報醫師調整肝素（Heparin / LMWH）劑量或改採無肝素生理食鹽水定期沖洗法。"
+      ],
+      air: [
+        "<strong>步驟 1｜立即夾管停泵：</strong>第一時間關閉靜脈端管夾（Clamp venous line）並停止血液幫浦（Blood pump STOP），阻止空氣繼續進入體內！",
+        "<strong>步驟 2｜左側躺頭低腳高（Durant's Maneuver）：</strong>立即將患者轉為<strong>左側臥、頭低腳高姿勢</strong>，使氣泡滯留於右心室心尖處，避免阻塞肺動脈出口。",
+        "<strong>步驟 3｜高濃度氧氣與急救通報：</strong>給予 100% 純氧面罩吸入，立即啟動急救廣播通報醫師，必要時備妥中心靜脈導管抽氣或高壓氧轉診。"
+      ]
+    };
+
+    function renderSopSteps() {
+      const key = document.getElementById("sopSelect").value;
+      const container = document.getElementById("sopStepsContainer");
+      container.innerHTML = SOP_DATA[key].map(s => `<div class="sop-step">${s}</div>`).join("");
+    }
+
+    function calcTpe() {
+      const wt = Math.max(20, parseFloat(document.getElementById("tpeWt").value) || 60);
+      const hct = Math.min(70, Math.max(10, parseFloat(document.getElementById("tpeHct").value) || 32));
+      const mult = parseFloat(document.getElementById("tpeMult").value) || 1.2;
+      const fluid = document.getElementById("tpeFluid").value;
+
+      const epvLiters = 0.065 * wt * (1 - hct / 100);
+      const totalExMl = Math.round(epvLiters * mult * 1000);
+      const caAmp = (totalExMl / 1000 * 1.5).toFixed(1);
+
+      let fluidPlan = "";
+      if (fluid === "alb") {
+        fluidPlan = `建議配置：<strong>5% Albumin ${totalExMl} mL</strong>（約 ${Math.ceil(totalExMl / 250)} 瓶 250mL 5% 白蛋白，或以 20% Albumin 稀釋配置）。`;
+      } else if (fluid === "mix") {
+        const ffpMl = 750;
+        const albMl = Math.max(0, totalExMl - ffpMl);
+        fluidPlan = `建議配置：前段 <strong>5% Albumin ${albMl} mL</strong> ＋ 末段 <strong>FFP 約 3–4 單位（~750 mL）</strong>以補充凝血因子。`;
+      } else {
+        fluidPlan = `建議配置：全程 <strong>FFP ${totalExMl} mL</strong>（約 ${Math.ceil(totalExMl / 250)} 單位），密切監測過敏反應與檸檬酸低血鈣。`;
+      }
+
+      document.getElementById("tpeResultBox").innerHTML = `
+        <div class="sop-step" style="border-left-color: var(--primary);">
+          <strong>預估血漿容積 (1.0 × EPV)：</strong>${epvLiters.toFixed(2)} L（${Math.round(epvLiters * 1000)} mL）<br/>
+          <strong>本次目標總置換量 (${mult} × EPV)：</strong><span style="font-size:1.05rem; color:#B45309;">${totalExMl} mL</span>
+        </div>
+        <div class="sop-step" style="border-left-color: var(--sage);">${fluidPlan}</div>
+        <div class="sop-step" style="border-left-color: var(--coral);">
+          <strong>低血鈣預防提示：</strong>若使用 ACD-A 檸檬酸抗凝或輸注大量 FFP，建議預防性靜脈補充 10% Calcium Gluconate 約 <strong>${caAmp} 支（10–20 mL）</strong>並監測游離鈣。
+        </div>
+      `;
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.add("open");
+      if (id === "sopModal") renderSopSteps();
+      if (id === "tpeModal") calcTpe();
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("open");
+    }
+    function closeModalOnBg(evt, id) {
+      if (evt.target.id === id) closeModal(id);
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      calcPocket();
+      renderSopSteps();
+      calcTpe();
+    });
+  </script>
+</body>
+</html>
